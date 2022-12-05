@@ -6,13 +6,17 @@ import axios from 'axios'
 
 import { createAuth0 } from '@auth0/auth0-vue';
 
-createApp(App).use(store).use(router).use(
+const app = createApp(App)
+app.use(store)
+app.use(router)
+app.use(
   createAuth0({
     domain: "dev-iad2xb0dso2kocpi.us.auth0.com",
     client_id: "zHHurvW34IkVP6si4oVEmQNFNQSJKpXA",
     redirect_uri: window.location.origin
   })
-).mount('#app')
+)
+app.mount('#app')
 
 
 //^^^ Note from Trevor: This is definitely a security issue to have this in an untracked file lmao. dw about it.

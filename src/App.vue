@@ -4,9 +4,15 @@
     <router-link to="/essays">Essays</router-link> |
     <router-link to="/comments">Comments</router-link> |
     <router-link to="/account">Account</router-link> |
-    <button @click="login">
+    <button @click="login" v-if="!isAuthenticated">
       <strong>Sign In</strong>
     </button>
+    <span id="signedIn" v-if="isAuthenticated">
+      <button @click="logout" >
+        <strong>Sign Out</strong>
+      </button>
+      <span> Logged in as: {{user.email}}</span>
+    </span>
   </nav>
   <router-view/>
 </template>
@@ -37,10 +43,21 @@ nav a.router-link-exact-active {
 import { useAuth0 } from '@auth0/auth0-vue';
 
 export default {
+  
   auth0: useAuth0,
+  data() {
+    return {
+      user: this.$auth0.user,
+      isAuthenticated: this.$auth0.isAuthenticated,
+      isLoading: this.$auth0.isLoading,
+    };
+  },
   methods: {
     login() {
       this.$auth0.loginWithRedirect();
+    },
+    logout() {
+      this.$auth0.logout({ returnTo: window.location.origin });
     }
   }
 }
