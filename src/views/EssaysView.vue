@@ -13,6 +13,7 @@
             <span>Modified: </span>
             <label>{{ essay.date_modified }}, </label>
             <button @click="postEssay(essay.id,essay.title,essay.content,true)">Delete Essay</button>
+            <button @click="singleEssay(essay.id)">View Essay</button>
         </div>
         <div>
             <input v-model="newEssayTitle" placeholder="Title of new essay" />
@@ -48,8 +49,7 @@ export default {
         }
     },
     mounted() {
-        axios
-            this.reloadEssays()
+        this.reloadEssays()
     },
     methods: {
         postEssay(id= -1, title="",content="",toDelete=false) {
@@ -77,6 +77,9 @@ export default {
                 })
                 .finally(() => this.loading = false)
                 
+        },
+        singleEssay(id) {
+            this.$router.push('/essay/' + id)
         }
     }
 }
