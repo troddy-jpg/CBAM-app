@@ -1,24 +1,21 @@
 <template>
     <div class="essays">
         <h1>Essays section</h1>
-        <div v-for="(essay) in essays" :key="essay.id">
-            <span>Id: </span>
-            <label>{{ essay.id }}, </label>
-            <span>Title: </span>
-            <label>{{ essay.title }}, </label>
-            <span>Revision: </span>
-            <label>{{ essay.revision }}, </label>
-            <span>Format: </span>
-            <label>{{ essay.format }}, </label>
-            <span>Modified: </span>
-            <label>{{ essay.date_modified }}, </label>
-            <button @click="postEssay(essay.id,essay.title,essay.content,true)">Delete Essay</button>
-            <button @click="singleEssay(essay.id)">View Essay</button>
+        <h3>Click an essay to view it</h3>
+        <div v-for="(essay) in essays" :key="essay.id" >
+            <span @click="singleEssay(essay.id)">
+            <label>'{{ essay.title }}'</label>
+            <span> By </span>
+            <label>{{ essay.user }}</label>
+            <span> V. </span>
+            <label>{{ essay.revision }}</label>
+            </span>
+            <button @click="deleteEssay(essay.id)">Delete Essay</button>
         </div>
         <div>
             <input v-model="newEssayTitle" placeholder="Title of new essay" />
             <input v-model="newEssayContent" placeholder="Content of new essay" />
-            <button @click="postEssay(-1,newEssayTitle,newEssayContent,false)">Post new essay</button>
+            <button @click="postEssay(newEssayTitle,newEssayContent)">Post new essay</button>
             <button @click="reloadEssays()">refresh essays</button>
         </div>
     </div>
@@ -38,7 +35,7 @@ export default {
     data() {
         return {
             essays: [
-                { id: -1, user_id: -1, title: "", content: "", revision: -1, format: "", date_modified: "" },
+                {}//{ id: -1, user_id: -1, title: "", content: "", revision: -1, format: "", date_modified: "" },
             ],
             errored: false,
             loading: true,
@@ -52,14 +49,14 @@ export default {
         this.reloadEssays()
     },
     methods: {
-        postEssay(id= -1, title="",content="",toDelete=false) {
+        postEssay(title = "", content = "") {
+            if (!this.isAuthenticated)
+                return//don't post if not authenticated
             axios
-                .post('http://localhost:5000/essay_db', {
-                    id: id,
-                    user_id: 1,//this.user.email,
+                .post(('http://localhost:5000/essays'),{
+                    user_email: this.user.email,
                     title: title,
                     content: content,
-                    delete: toDelete
                 })
                 .then((response)=> {
                     console.log(response);
@@ -67,9 +64,11 @@ export default {
                 .finally(()=> this.reloadEssays())
         },
         reloadEssays() {
+            if (!this.isAuthenticated)
+                return//don't make API call if not authenticated
             this.loading = true
             axios
-                .get('http://localhost:5000/essay_db')
+                .get('http://localhost:5000/essays')
                 .then(response => (this.essays = response.data))
                 .catch(error => {
                     console.log(error)
@@ -80,6 +79,14 @@ export default {
         },
         singleEssay(id) {
             this.$router.push('/essay/' + id)
+        },
+        deleteEssay(id) {
+            axios
+                .delete('http://localhost:5000/essay/' + id)
+                .then((response) => {
+                    console.log(response);
+                })
+                .finally(() => this.reloadEssays())
         }
     }
 }

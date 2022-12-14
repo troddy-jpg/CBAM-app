@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView'
 import singleEssayView from '../components/SingleEssayView'
+import CommentPageView from '../components/CommentPageView'
 
 const routes = [
   {
@@ -14,9 +15,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/EssaysView.vue')
   },
   {
-    path: '/comments',
-    name: 'comments',
-    component: () => import(/* webpackChunkName: "about" */ '../views/CommentsView.vue')
+    path: '/search',
+    name: 'search',
+    component: () => import(/* webpackChunkName: "search" */ '../views/SearchView.vue')
   },
   {
     path: '/account',
@@ -29,6 +30,13 @@ const routes = [
     props: true,
     component: singleEssayView
   },
+  //this.$router.push('/essay/' + this.essay.id + '/comments/' + lineNumber)
+  {
+    path: '/essay/:id/:line',
+    name: 'commentPage',
+    props: true,
+    component: CommentPageView
+  }
 ]
 
 const router = createRouter({

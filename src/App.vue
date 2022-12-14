@@ -2,7 +2,7 @@
   <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/essays">Essays</router-link> |
-    <router-link to="/comments">Comments</router-link> |
+    <router-link to="/search">Search</router-link> |
     <router-link to="/account">Account</router-link> |
     <button @click="login" v-if="!isAuthenticated">
       <strong>Sign In</strong>
@@ -14,7 +14,12 @@
       <span> Logged in as: {{user.email}}</span>
     </span>
   </nav>
-  <router-view/>
+  <div v-if="this.isAuthenticated">
+    <router-view/>
+  </div>
+  <div v-if="!this.isAuthenticated">
+    Please sign in to view content
+  </div>
 </template>
 
 <style>
@@ -55,10 +60,11 @@ export default {
   methods: {
     login() {
       this.$auth0.loginWithRedirect();
+      //add a new user to our db if one does not already exist
     },
     logout() {
       this.$auth0.logout({ returnTo: window.location.origin });
-    }
+    },
   }
 }
 
